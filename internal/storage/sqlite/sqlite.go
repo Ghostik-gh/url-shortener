@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"url-shortener/internal/storage"
 
-	_ "modernc.org/sqlite"
+	"modernc.org/sqlite"
 )
 
 type Storage struct {
@@ -46,14 +46,12 @@ func (s *Storage) SaveURL(urlLong string, alias string) error {
 	if err != nil {
 		return fmt.Errorf("%s: %w", op, err)
 	}
-	fmt.Printf("urlLong: %v\n", urlLong)
-	fmt.Printf("alias: %v\n", alias)
-	res, err := query.Exec(urlLong, alias)
-	fmt.Println("res: ", res)
+	_, err = query.Exec(urlLong, alias)
 	if err != nil {
-		// if sqliteErr, ok := err.(*sqlite3.Error); ok && sqliteErr.Code() == sqlite3.ErrConstraintUnique {
-		// return fmt.Errorf("%s: %w", op, storage.ErrURLExists)
-		// }
+		if err2, ok := err.(*sqlite.Error); ok && err2.Code() == 2067 {
+			return fmt.Errorf("%s: %w", op, storage.ErrURLExists)
+
+		}
 		return fmt.Errorf("%s: %w", op, err)
 	}
 	return nil
