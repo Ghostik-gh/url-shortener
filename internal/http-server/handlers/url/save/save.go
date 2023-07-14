@@ -27,11 +27,12 @@ type Response struct {
 
 const aliasLength = 6
 
+//go:generate mockery --name=URLSaver
 type URLSaver interface {
 	SaveURL(urlLong string, alias string) error
 }
 
-func New(log *slog.Logger, urlsaver URLSaver) http.HandlerFunc {
+func New(log *slog.Logger, urlSaver URLSaver) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const op = "handlers.url.save.New"
 		log = log.With(
@@ -52,8 +53,6 @@ func New(log *slog.Logger, urlsaver URLSaver) http.HandlerFunc {
 
 		log.Info("request body decoded", slog.Any("request", req))
 
-		log.Info(" ", req)
-
 		if err := validator.New().Struct(req); err != nil {
 			validateErr := err.(validator.ValidationErrors)
 
@@ -69,7 +68,7 @@ func New(log *slog.Logger, urlsaver URLSaver) http.HandlerFunc {
 			alias = random.GenerateAlias(aliasLength)
 		}
 
-		if err := urlsaver.SaveURL(req.URL, alias); err != nil {
+		if err := urlSaver.SaveURL(req.URL, alias); err != nil {
 			if errors.Is(err, storage.ErrURLExists) {
 				log.Info("url already exists", slog.String("url", req.URL))
 				render.JSON(w, r, resp.Error("url already exists"))
