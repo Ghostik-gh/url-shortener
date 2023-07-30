@@ -12,6 +12,9 @@ import (
 	"golang.org/x/exp/slog"
 )
 
+// URLGetter is an interface for getting url by alias.
+//
+//go:generate mockery --name=URLGetter
 type URLGetter interface {
 	GetURL(alias string) (string, error)
 }
