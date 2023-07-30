@@ -86,12 +86,16 @@ func (s *Storage) DeleteURL(alias string) error {
 	if err != nil {
 		return fmt.Errorf("%s: %w", op, err)
 	}
-	_, err = query.Exec(alias)
+	result, err := query.Exec(alias)
 	if err != nil {
 		if errors.Is(err, storage.ErrURLNotFound) {
 			return storage.ErrURLNotFound
 		}
 		return fmt.Errorf("%s: %w", op, err)
+	}
+
+	if rows, _ := result.RowsAffected(); rows == 0 {
+		return fmt.Errorf("%s: %v", op, "nothing to delete")
 	}
 
 	return nil
