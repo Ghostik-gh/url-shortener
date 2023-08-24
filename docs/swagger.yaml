@@ -1,0 +1,25 @@
+basePath: /
+host: localhost:8002
+info:
+  contact: {}
+  description: sxdcfvgbhnjmk,l
+  title: url_shorteneer
+  version: "1.0"
+paths:
+  /auth/sign-up:
+    post:
+      consumes:
+      - application/json
+      description: create account
+      operationId: create-account
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: integer
+      summary: SignUp
+      tags:
+      - auth
+swagger: "2.0"

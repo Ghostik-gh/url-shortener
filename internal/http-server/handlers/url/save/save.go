@@ -32,6 +32,14 @@ type URLSaver interface {
 	SaveURL(urlLong string, alias string) error
 }
 
+// @Summary SignUp
+// @Tags auth
+// @Description create account
+// @ID create-account
+// @Accept  json
+// @Produce  json
+// @Success 200 {integer} integer 1
+// @Router /auth/sign-up [post]
 func New(log *slog.Logger, urlSaver URLSaver) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const op = "handlers.url.save.New"

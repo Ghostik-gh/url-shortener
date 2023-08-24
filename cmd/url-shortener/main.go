@@ -18,6 +18,10 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"golang.org/x/exp/slog"
+
+	_ "url-shortener/docs"
+
+	"github.com/swaggo/http-swagger"
 )
 
 const (
@@ -25,6 +29,13 @@ const (
 	envDev   = "dev"
 	envProd  = "prod"
 )
+
+// @title url_shorteneer
+// @version 1.0
+// @description sxdcfvgbhnjmk,l
+
+// @host localhost:8002
+// @BasePath /
 
 func main() {
 	cfg := config.MustLoad()
@@ -58,6 +69,11 @@ func main() {
 	})
 
 	router.Get("/{alias}", redirect.New(log, storage))
+
+	router.Get("/swagger/*", httpSwagger.Handler(
+		httpSwagger.URL("http://localhost:8002/swagger/doc.json"), //The url pointing to API definition
+	))
+
 	// Graceful shutdown
 	done := make(chan os.Signal, 1)
 	signal.Notify(done, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
